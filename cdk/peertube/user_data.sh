@@ -177,8 +177,9 @@ aws ssm get-parameter \
 | jq -r . > /opt/oe/patterns/instance.json
 
 ACCESS_KEY_ID=$(cat /opt/oe/patterns/instance.json | jq -r .access_key_id)
-SECRET_ACCESS_KEY=$(cat /opt/oe/patterns/instance.json | jq -r .secret_access_key)
 APP_KEY=$(cat /opt/oe/patterns/instance.json | jq -r .app_key)
+SECRET_ACCESS_KEY=$(cat /opt/oe/patterns/instance.json | jq -r .secret_access_key)
+SMTP_PASSWORD=$(cat /opt/oe/patterns/instance.json | jq -r .smtp_password)
 
 echo "${DbCluster.Endpoint.Address}:5432:peertube:peertube:$DB_PASSWORD" > /root/.pgpass
 chmod 600 /root/.pgpass
@@ -190,12 +191,19 @@ cd /var/www/peertube
 sudo -u peertube cp peertube-latest/config/default.yaml config/default.yaml
 sudo -u peertube cp peertube-latest/config/production.yaml.example config/production.yaml
 sed -i 's/example.com/${Hostname}/g' config/production.yaml
-sed -i "s/peertube: ''/peertube: '$APP_KEY'/" config/production.yaml
-sed -i "/database:/{N;s/hostname: 'localhost'/hostname: '${DbCluster.Endpoint.Address}'/}" config/production.yaml
-sed -i "/database:/{N;N;N;N;s/suffix: '_prod'/name: 'peertube'/}" config/production.yaml
-sed -i "/database:/{N;N;N;N;N;N;s/password: 'peertube'/password: '$DB_PASSWORD'/}" config/production.yaml
-sed -i "/redis:/{N;s/hostname: 'localhost'/hostname: '${RedisCluster.RedisEndpoint.Address}'/}" config/production.yaml
-sed -i "/redis:/{N;N;s/port: 6379/port: ${RedisCluster.RedisEndpoint.Port}/}" config/production.yaml
+sed -i "/^secrets:/{N;N;s/peertube: ''/peertube: '$APP_KEY'/}" config/production.yaml
+sed -i "/^database:/{N;s/hostname: 'localhost'/hostname: '${DbCluster.Endpoint.Address}'/}" config/production.yaml
+sed -i "/^database:/{N;N;N;N;s/suffix: '_prod'/name: 'peertube'/}" config/production.yaml
+sed -i "/^database:/{N;N;N;N;N;N;s/password: 'peertube'/password: '$DB_PASSWORD'/}" config/production.yaml
+sed -i "/^redis:/{N;s/hostname: 'localhost'/hostname: '${RedisCluster.RedisEndpoint.Address}'/}" config/production.yaml
+sed -i "/^redis:/{N;N;s/port: 6379/port: ${RedisCluster.RedisEndpoint.Port}/}" config/production.yaml
+sed -i "/^smtp:/{N;N;N;N;N;s/hostname: null/hostname: 'email-smtp.${AWS::Region}.amazonaws.com'/}" config/production.yaml
+sed -i "/^smtp:/{N;N;N;N;N;N;s/port: 465/port: 587/}" config/production.yaml
+sed -i "/^smtp:/{N;N;N;N;N;N;N;s/username: null/username: '$ACCESS_KEY_ID'/}" config/production.yaml
+sed -i "/^smtp:/{N;N;N;N;N;N;N;N;s/password: null/password: '$SMTP_PASSWORD'/}" config/production.yaml
+sed -i "/^signup:/{N;s/enabled: false/enabled: true/}" config/production.yaml
+sed -i "/^signup:/{N;N;N;s/limit: 10/limit: -1/}" config/production.yaml
+
 
 cp /var/www/peertube/peertube-latest/support/nginx/peertube /etc/nginx/sites-available/peertube
 rm -f /etc/nginx/sites-enabled/default
@@ -207,6 +215,8 @@ sed -i 's|/etc/letsencrypt/live/${Hostname}/privkey.pem|/etc/ssl/private/nginx-s
 sed -i 's|ssl_stapling|# ssl_stapling|g' /etc/nginx/sites-available/peertube
 ln -s /etc/nginx/sites-available/peertube /etc/nginx/sites-enabled/peertube
 
+systemctl restart nginx
+
 cp /var/www/peertube/peertube-latest/support/sysctl.d/30-peertube-tcp.conf /etc/sysctl.d/
 sysctl -p /etc/sysctl.d/30-peertube-tcp.conf
 
@@ -217,8 +227,5 @@ systemctl daemon-reload
 systemctl enable peertube
 systemctl start peertube
 
-service nginx restart
-
-echo 'hi'
 success=$?
 cfn-signal --exit-code $success --stack ${AWS::StackName} --resource Asg --region ${AWS::Region}
