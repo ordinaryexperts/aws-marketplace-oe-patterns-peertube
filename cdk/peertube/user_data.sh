@@ -89,15 +89,27 @@ cat <<EOF > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
             "timezone": "UTC"
           },
           {
-            "file_path": "/var/log/nginx/access.log",
+            "file_path": "/var/log/nginx/peertube.access.log",
             "log_group_name": "${AsgAppLogGroup}",
-            "log_stream_name": "{instance_id}-/var/log/nginx/access.log",
+            "log_stream_name": "{instance_id}-/var/log/nginx/peertube.access.log",
             "timezone": "UTC"
           },
           {
-            "file_path": "/var/log/nginx/error.log",
+            "file_path": "/var/log/nginx/peertube.error.log",
             "log_group_name": "${AsgAppLogGroup}",
-            "log_stream_name": "{instance_id}-/var/log/nginx/error.log",
+            "log_stream_name": "{instance_id}-/var/log/nginx/peertube.error.log",
+            "timezone": "UTC"
+          },
+          {
+            "file_path": "/var/www/peertube/storage/logs/peertube.log",
+            "log_group_name": "${AsgAppLogGroup}",
+            "log_stream_name": "{instance_id}-/var/www/peertube/storage/logs/peertube.log",
+            "timezone": "UTC"
+          },
+          {
+            "file_path": "/var/www/peertube/storage/logs/peertube-audit.log",
+            "log_group_name": "${AsgAppLogGroup}",
+            "log_stream_name": "{instance_id}-/var/www/peertube/storage/logs/peertube-audit.log",
             "timezone": "UTC"
           }
         ]
