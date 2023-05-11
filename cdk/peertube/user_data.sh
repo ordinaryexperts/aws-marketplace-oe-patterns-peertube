@@ -225,6 +225,9 @@ sed -i 's/${!PEERTUBE_HOST}/127.0.0.1:9000/g' /etc/nginx/sites-available/peertub
 sed -i 's|/etc/letsencrypt/live/${Hostname}/fullchain.pem|/etc/ssl/certs/nginx-selfsigned.crt|g' /etc/nginx/sites-available/peertube
 sed -i 's|/etc/letsencrypt/live/${Hostname}/privkey.pem|/etc/ssl/private/nginx-selfsigned.key|g' /etc/nginx/sites-available/peertube
 sed -i 's|ssl_stapling|# ssl_stapling|g' /etc/nginx/sites-available/peertube
+sed -i "/error_log/a\  location /elb-check { access_log off; return 200 'ok'; add_header Content-Type text/plain; }" /etc/nginx/sites-available/peertube
+sed -i "/error_log/a\  real_ip_header X-Forwarded-For;\n  set_real_ip_from ${VpcCidr};" /etc/nginx/sites-available/peertube
+
 ln -s /etc/nginx/sites-available/peertube /etc/nginx/sites-enabled/peertube
 
 systemctl restart nginx

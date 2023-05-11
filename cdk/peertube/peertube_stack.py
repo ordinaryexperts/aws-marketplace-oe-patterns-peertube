@@ -153,7 +153,7 @@ class PeertubeStack(Stack):
             self,
             "Alb",
             asg=asg,
-            health_check_path = "/health",
+            health_check_path = "/elb-check",
             vpc=vpc
         )
 
