@@ -213,6 +213,7 @@ sed -i "/^smtp:/{N;N;N;N;N;s/hostname: null/hostname: 'email-smtp.${AWS::Region}
 sed -i "/^smtp:/{N;N;N;N;N;N;s/port: 465/port: 587/}" config/production.yaml
 sed -i "/^smtp:/{N;N;N;N;N;N;N;s/username: null/username: '$ACCESS_KEY_ID'/}" config/production.yaml
 sed -i "/^smtp:/{N;N;N;N;N;N;N;N;s/password: null/password: '$SMTP_PASSWORD'/}" config/production.yaml
+sed -i "/^smtp:/{N;N;N;N;N;N;N;N;N;s/tls: true/tls: false/}" config/production.yaml
 sed -i "/^signup:/{N;s/enabled: false/enabled: true/}" config/production.yaml
 sed -i "/^signup:/{N;N;N;s/limit: 10/limit: -1/}" config/production.yaml
 
