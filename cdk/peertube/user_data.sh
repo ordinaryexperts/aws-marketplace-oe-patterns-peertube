@@ -216,13 +216,11 @@ sysctl -p /etc/sysctl.d/30-peertube-tcp.conf
 
 cp /var/www/peertube/peertube-latest/support/systemd/peertube.service /etc/systemd/system/
 sed -i 's|After=network.target postgresql.service redis-server.service|After=network.target|g' /etc/systemd/system/peertube.service
+sed -i "/Environment=NODE_CONFIG_DIR=\/var\/www\/peertube\/config/a Environment=PT_INITIAL_ROOT_PASSWORD=$ROOT_PASSWORD" /etc/systemd/system/peertube.service
 
 systemctl daemon-reload
 systemctl enable peertube
 systemctl start peertube
-
-cd /var/www/peertube/peertube-latest
-PT_INITIAL_ROOT_PASSWORD=$ROOT_PASSWORD NODE_CONFIG_DIR=/var/www/peertube/config NODE_ENV=production npm run reset-password -- -u root
 
 systemctl restart peertube
 
