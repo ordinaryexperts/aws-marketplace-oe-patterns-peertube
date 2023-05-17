@@ -145,41 +145,6 @@ aws ssm get-parameter \
 DB_PASSWORD=$(cat /opt/oe/patterns/secret.json | jq -r .password)
 DB_USERNAME=$(cat /opt/oe/patterns/secret.json | jq -r .username)
 
-pip install boto3
-cat <<EOF > /root/check-secrets.py
-#!/usr/bin/env python3
-
-import boto3
-import json
-import subprocess
-import sys
-
-region_name = sys.argv[1]
-secret_name = sys.argv[2]
-
-client = boto3.client("secretsmanager", region_name=region_name)
-response = client.list_secrets(
-  Filters=[{"Key": "name", "Values": [secret_name]}]
-)
-arn = response["SecretList"][0]["ARN"]
-response = client.get_secret_value(
-  SecretId=arn
-)
-current_secret = json.loads(response["SecretString"])
-if not 'app_key' in current_secret:
-  cmd = 'openssl rand -hex 32'
-  output = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True).stdout.decode('utf-8')
-  current_secret['app_key'] = output
-  client.update_secret(
-    SecretId=arn,
-    SecretString=json.dumps(current_secret)
-  )
-else:
-  print('Secrets already generated - no action needed.')
-EOF
-chown root:root /root/check-secrets.py
-chmod 744 /root/check-secrets.py
-
 /root/check-secrets.py ${AWS::Region} ${InstanceSecretName}
 
 aws ssm get-parameter \
@@ -192,6 +157,7 @@ ACCESS_KEY_ID=$(cat /opt/oe/patterns/instance.json | jq -r .access_key_id)
 APP_KEY=$(cat /opt/oe/patterns/instance.json | jq -r .app_key)
 SECRET_ACCESS_KEY=$(cat /opt/oe/patterns/instance.json | jq -r .secret_access_key)
 SMTP_PASSWORD=$(cat /opt/oe/patterns/instance.json | jq -r .smtp_password)
+ROOT_PASSWORD=$(cat /opt/oe/patterns/instance.json | jq -r .root_password)
 
 echo "${DbCluster.Endpoint.Address}:5432:peertube:peertube:$DB_PASSWORD" > /root/.pgpass
 chmod 600 /root/.pgpass
@@ -199,7 +165,11 @@ psql -U peertube -h ${DbCluster.Endpoint.Address} -d peertube -c "CREATE EXTENSI
 psql -U peertube -h ${DbCluster.Endpoint.Address} -d peertube -c "CREATE EXTENSION IF NOT EXISTS unaccent"
 rm /root/.pgpass
 
+mkdir -p /data/storage
+chown peertube:peertube /data/storage
 cd /var/www/peertube
+ln -s /data/storage storage
+
 sudo -u peertube cp peertube-latest/config/default.yaml config/default.yaml
 sudo -u peertube cp peertube-latest/config/production.yaml.example config/production.yaml
 sed -i 's/example.com/${Hostname}/g' config/production.yaml
@@ -216,7 +186,15 @@ sed -i "/^smtp:/{N;N;N;N;N;N;N;N;s/password: null/password: '$SMTP_PASSWORD'/}" 
 sed -i "/^smtp:/{N;N;N;N;N;N;N;N;N;s/tls: true/tls: false/}" config/production.yaml
 sed -i "/^signup:/{N;s/enabled: false/enabled: true/}" config/production.yaml
 sed -i "/^signup:/{N;N;N;s/limit: 10/limit: -1/}" config/production.yaml
-
+sed -i "/^object_storage:/{N;s/enabled: false/enabled: true/}" config/production.yaml
+sed -i "/^object_storage:/{N;N;N;N;s/endpoint: ''/endpoint: 's3.amazonaws.com'/}" config/production.yaml
+sed -i "/^object_storage:/{N;N;N;N;N;N;s/region: 'us-east-1'/region: '${AWS::Region}'/}" config/production.yaml
+sed -i "s/access_key_id: ''/access_key_id: '$ACCESS_KEY_ID'/" config/production.yaml
+sed -i "s/secret_access_key: ''/secret_access_key: '$SECRET_ACCESS_KEY'/" config/production.yaml
+sed -i "s/bucket_name: 'streaming-playlists'/bucket_name: '${AssetsBucketName}'/" config/production.yaml
+sed -i "s/bucket_name: 'videos'/bucket_name: '${AssetsBucketName}'/" config/production.yaml
+sed -i "/Allows setting all buckets/{N;s|prefix: ''|prefix: 'streaming-playlists/'|}" config/production.yaml
+sed -i "/Same settings but for webtorrent videos/{N;N;N;s|prefix: ''|prefix: 'videos/'|}" config/production.yaml
 
 cp /var/www/peertube/peertube-latest/support/nginx/peertube /etc/nginx/sites-available/peertube
 rm -f /etc/nginx/sites-enabled/default
@@ -242,6 +220,11 @@ sed -i 's|After=network.target postgresql.service redis-server.service|After=net
 systemctl daemon-reload
 systemctl enable peertube
 systemctl start peertube
+
+cd /var/www/peertube/peertube-latest
+PT_INITIAL_ROOT_PASSWORD=$ROOT_PASSWORD NODE_CONFIG_DIR=/var/www/peertube/config NODE_ENV=production npm run reset-password -- -u root
+
+systemctl restart peertube
 
 success=$?
 cfn-signal --exit-code $success --stack ${AWS::StackName} --resource Asg --region ${AWS::Region}
