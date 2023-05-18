@@ -79,7 +79,9 @@ class PeertubeStack(Stack):
         bucket = AssetsBucket(
             self,
             "AssetsBucket",
-            allow_public_access = True
+            allow_open_cors = True,
+            object_ownership_value = "ObjectWriter",
+            remove_public_access_block = True
         )
 
         ses = Ses(
