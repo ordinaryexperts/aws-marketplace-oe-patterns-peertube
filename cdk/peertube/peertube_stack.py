@@ -66,12 +66,6 @@ class PeertubeStack(Stack):
             "Vpc"
         )
 
-        self.name_param = CfnParameter(
-            self,
-            "Name",
-            default="PeerTube",
-            description="The name of this PeerTube site."
-        )
         self.admin_email_param = CfnParameter(
             self,
             "AdminEmail",
@@ -84,7 +78,8 @@ class PeertubeStack(Stack):
 
         bucket = AssetsBucket(
             self,
-            "AssetsBucket"
+            "AssetsBucket",
+            allow_public_access = True
         )
 
         ses = Ses(
@@ -196,7 +191,7 @@ class PeertubeStack(Stack):
                     "default": "Application Config"
                 },
                 "Parameters": [
-                    self.name_param.logical_id
+                    self.admin_email_param.logical_id
                 ]
             }
         ]
@@ -216,8 +211,8 @@ class PeertubeStack(Stack):
             "AWS::CloudFormation::Interface": {
                 "ParameterGroups": parameter_groups,
                 "ParameterLabels": {
-                    self.name_param.logical_id: {
-                        "default": "PeerTube Site Name"
+                    self.admin_email_param.logical_id: {
+                        "default": "PeerTube Admin Email"
                     },
                     **alb.metadata_parameter_labels(),
                     **bucket.metadata_parameter_labels(),
