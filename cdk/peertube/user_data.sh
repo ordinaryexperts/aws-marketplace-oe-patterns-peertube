@@ -170,6 +170,11 @@ chown peertube:peertube /data/storage
 cd /var/www/peertube
 ln -s /data/storage storage
 
+mkdir -p /data/config
+chown peertube:peertube /data/config
+chmod 750 /data/config
+ln -s /data/config config
+
 sudo -u peertube cp peertube-latest/config/default.yaml config/default.yaml
 sudo -u peertube cp peertube-latest/config/production.yaml.example config/production.yaml
 sed -i 's/example.com/${Hostname}/g' config/production.yaml
@@ -195,6 +200,9 @@ sed -i "s/bucket_name: 'streaming-playlists'/bucket_name: '${AssetsBucketName}'/
 sed -i "s/bucket_name: 'videos'/bucket_name: '${AssetsBucketName}'/" config/production.yaml
 sed -i "/Allows setting all buckets/{N;s|prefix: ''|prefix: 'streaming-playlists/'|}" config/production.yaml
 sed -i "/Same settings but for webtorrent videos/{N;N;N;s|prefix: ''|prefix: 'videos/'|}" config/production.yaml
+if [ -n "${AdminEmail}" ]; then
+    sed -i "/^admin:/{N;N;N;s/email: 'admin@${Hostname}'/email: '${AdminEmail}'/}" config/production.yaml
+fi
 
 cp /var/www/peertube/peertube-latest/support/nginx/peertube /etc/nginx/sites-available/peertube
 rm -f /etc/nginx/sites-enabled/default

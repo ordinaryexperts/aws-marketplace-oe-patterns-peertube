@@ -8,7 +8,8 @@ deploy: build
 	--require-approval never \
 	--parameters AlbCertificateArn=arn:aws:acm:us-east-1:992593896645:certificate/943928d7-bfce-469c-b1bf-11561024580e \
 	--parameters AlbIngressCidr=0.0.0.0/0 \
-	--parameters AsgReprovisionString=20230516.1 \
+	--parameters AdminEmail=dylan@ordinaryexperts.com \
+	--parameters AsgReprovisionString=20230517.2 \
 	--parameters DnsHostname=peertube-${USER}.dev.patterns.ordinaryexperts.com \
 	--parameters DnsRoute53HostedZoneName=dev.patterns.ordinaryexperts.com \
 	--parameters Name="OE PeerTube" \

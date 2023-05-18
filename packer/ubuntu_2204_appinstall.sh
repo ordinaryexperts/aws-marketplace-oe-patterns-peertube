@@ -32,8 +32,7 @@ useradd -m -d /var/www/peertube -s /bin/bash -p peertube peertube
 chmod 755 /var/www/peertube
 VERSION=$(curl -s https://api.github.com/repos/chocobozzz/peertube/releases/latest | grep tag_name | cut -d '"' -f 4) && echo "Latest Peertube version is $VERSION"
 cd /var/www/peertube
-sudo -u peertube mkdir config versions
-sudo -u peertube chmod 750 config/
+sudo -u peertube mkdir versions
 cd /var/www/peertube/versions
 sudo -u peertube wget -q "https://github.com/Chocobozzz/PeerTube/releases/download/${VERSION}/peertube-${VERSION}.zip"
 sudo -u peertube unzip -q peertube-${VERSION}.zip && sudo -u peertube rm peertube-${VERSION}.zip
@@ -65,12 +64,12 @@ current_secret = json.loads(response["SecretString"])
 needs_update = False
 if not 'app_key' in current_secret:
   needs_update = True
-  cmd = 'openssl rand -hex 32'
+  cmd = "random_value=$(seed=$(date +%s%N); tr -dc '[:alnum:]' < /dev/urandom | head -c 32; echo $seed | sha256sum | awk '{print substr($1, 1, 32)}'); echo $random_value"
   output = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True).stdout.decode('utf-8')
   current_secret['app_key'] = output
 if not 'root_password' in current_secret:
   needs_update = True
-  cmd = "tr -cd '[:alnum:]' < /dev/urandom | fold -w16 | head -n1"
+  cmd = "random_value=$(seed=$(date +%s%N); tr -dc '[:alnum:]' < /dev/urandom | head -c 16; echo $seed | sha256sum | awk '{print substr($1, 1, 16)}'); echo $random_value"
   output = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True).stdout.decode('utf-8')
   current_secret['root_password'] = output
 if needs_update:
