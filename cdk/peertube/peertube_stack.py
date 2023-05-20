@@ -129,12 +129,11 @@ class PeertubeStack(Stack):
             self,
             "Asg",
             additional_iam_role_policies=[asg_update_secret_policy],
-            default_instance_type="t3.small",
+            default_instance_type="c7g.medium",
             root_volume_size=20,
             secret_arns=[db_secret.secret_arn(), ses.secret_arn()],
             singleton = True,
             use_data_volume = True,
-            use_graviton = False,
             user_data_contents=user_data_contents,
             user_data_variables={
                 "AssetsBucketName": bucket.bucket_name(),
