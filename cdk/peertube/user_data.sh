@@ -205,6 +205,7 @@ if [ -n "${AdminEmail}" ]; then
     sed -i "/^admin:/{N;N;N;s/email: 'admin@${Hostname}'/email: '${AdminEmail}'/}" config/production.yaml
 fi
 sed -i "s/from_address: 'admin@${Hostname}'/from_address: 'no-reply@${Hostname}'/" config/production.yaml
+sed -i "/audio-only/{N;N;N;N;s/480p: false/480p: true/}" config/production.yaml
 
 
 cp /var/www/peertube/peertube-latest/support/nginx/peertube /etc/nginx/sites-available/peertube

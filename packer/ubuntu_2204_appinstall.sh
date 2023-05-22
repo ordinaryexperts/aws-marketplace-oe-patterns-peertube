@@ -2,7 +2,8 @@
 # PeerTube configuration
 #
 
-PEERTUBE_VERSION=TODO
+# https://github.com/Chocobozzz/PeerTube/releases
+VERSION=v5.1.0
 
 apt-get update
 apt-get -y install curl sudo unzip vim
@@ -11,12 +12,19 @@ apt-get -y install curl sudo unzip vim
 curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash - && \
 apt-get install -y nodejs
 
+# install ffmpeg 6
+mkdir /root/ffmpeg
+cd /root/ffmpeg
+wget https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-arm64-static.tar.xz
+tar -xvf ffmpeg-release-arm64-static.tar.xz
+cp /root/ffmpeg/ffmpeg-6.0-arm64-static/ffmpeg /usr/bin/ffmpeg
+cp /root/ffmpeg/ffmpeg-6.0-arm64-static/ffprobe /usr/bin/ffprobe
+
 # install yarn
 npm install --global yarn
 
 apt-get -y install        \
         nginx             \
-        ffmpeg            \
         postgresql-client \
         python3-dev       \
         python-is-python3 \
@@ -27,10 +35,8 @@ apt-get -y install        \
         cron              \
         wget
 
-
 useradd -m -d /var/www/peertube -s /bin/bash -p peertube peertube
 chmod 755 /var/www/peertube
-VERSION=$(curl -s https://api.github.com/repos/chocobozzz/peertube/releases/latest | grep tag_name | cut -d '"' -f 4) && echo "Latest Peertube version is $VERSION"
 cd /var/www/peertube
 sudo -u peertube mkdir versions
 cd /var/www/peertube/versions
