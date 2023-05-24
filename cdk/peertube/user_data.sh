@@ -201,6 +201,8 @@ sed -i "s/bucket_name: 'streaming-playlists'/bucket_name: '${AssetsBucketName}'/
 sed -i "s/bucket_name: 'videos'/bucket_name: '${AssetsBucketName}'/" config/production.yaml
 sed -i "/Allows setting all buckets/{N;s|prefix: ''|prefix: 'streaming-playlists/'|}" config/production.yaml
 sed -i "/Same settings but for webtorrent videos/{N;N;N;s|prefix: ''|prefix: 'videos/'|}" config/production.yaml
+sed -i "/Same settings but for webtorrent videos/{N;N;N;N;s|base_url: ''|base_url: 'https://${CloudFrontDistribution.DomainName}'|}" config/production.yaml
+sed -i "/Useful when you want to use a CDN/{N;s|base_url: ''|base_url: 'https://${CloudFrontDistribution.DomainName}'|}" config/production.yaml
 if [ -n "${AdminEmail}" ]; then
     sed -i "/^admin:/{N;N;N;s/email: 'admin@${Hostname}'/email: '${AdminEmail}'/}" config/production.yaml
 fi

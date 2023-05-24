@@ -70,12 +70,12 @@ current_secret = json.loads(response["SecretString"])
 needs_update = False
 if not 'app_key' in current_secret:
   needs_update = True
-  cmd = "random_value=$(seed=$(date +%s%N); tr -dc '[:alnum:]' < /dev/urandom | head -c 32; echo $seed | sha256sum | awk '{print substr($1, 1, 32)}'); echo $random_value"
+  cmd = "random_value=\$(seed=\$(date +%s%N); tr -dc '[:alnum:]' < /dev/urandom | head -c 32; echo \$seed | sha256sum | awk '{print substr(\$1, 1, 32)}'); echo \$random_value"
   output = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True).stdout.decode('utf-8')
   current_secret['app_key'] = output
 if not 'root_password' in current_secret:
   needs_update = True
-  cmd = "random_value=$(seed=$(date +%s%N); tr -dc '[:alnum:]' < /dev/urandom | head -c 16; echo $seed | sha256sum | awk '{print substr($1, 1, 16)}'); echo $random_value"
+  cmd = "random_value=\$(seed=\$(date +%s%N); tr -dc '[:alnum:]' < /dev/urandom | head -c 16; echo \$seed | sha256sum | awk '{print substr(\$1, 1, 16)}'); echo \$random_value"
   output = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True).stdout.decode('utf-8')
   current_secret['root_password'] = output
 if needs_update:
