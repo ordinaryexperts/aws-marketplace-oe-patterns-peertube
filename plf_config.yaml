@@ -1,4 +1,5 @@
 ---
+"Product Slug": "peertube"
 "Product ID": ""
 "Product Code": ""
 "Accessibility": "Public"
@@ -12,7 +13,9 @@ Automatically configured to support auto-scaling through AWS Autoscaling Groups,
 
 The template ensure multi-level security by incorporating AWS IAM for federated access to resources with least privilege and AWS managed keys and Secret Manager to manage secrets for encryption of data at rest and in transit.
 
-We support multiple availability zones using an RDS Aurora MySQL cluster and EC2 Auto Scaling Groups. However, only one instance at a time is supported."
+We support multiple availability zones using an RDS Aurora MySQL cluster and EC2 Auto Scaling Groups. However, only one instance at a time is supported.
+
+An optional email address is collected as part of the CloudFormation parameters as the AdminEmail parameter. This email is used as the initial login for the PeerTube instance and is not shared with any third party."
 "Highlight1": "Production-ready PeerTube v5.1.0 site, with search, email, and caching"
 "Highlight2": "Integrated with AWS Certificate Manager for HTTPS support"
 "Highlight3": "Logs in CloudWatch Logs, Remote access via Session Manager"
@@ -35,7 +38,7 @@ We support multiple availability zones using an RDS Aurora MySQL cluster and EC2
 "Type": "AMI"
 "us-east-1 AMI ID": "{{ami}}" # final ami id
 "AMI Virtualization Type": "HVM"
-"Architecture": "x86_64"
+"Architecture": "arm64"
 "AFI": ""
 "Operating System": "Ubuntu"
 "Operating System Version": "22.04"

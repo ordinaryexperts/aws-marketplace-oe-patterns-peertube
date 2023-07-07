@@ -82,7 +82,7 @@ class PeertubeStack(Stack):
             self,
             "AdminEmail",
             default="",
-            description="Optional: The email address to use for the administrator account. If not specified, 'admin@{DnsHostname}' wil be used."
+            description="Optional: The email address to use for the PeerTube administrator account. If not specified, 'admin@{DnsHostname}' wil be used."
         )
 
         # dns
