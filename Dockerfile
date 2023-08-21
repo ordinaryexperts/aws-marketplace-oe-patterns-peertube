@@ -1,8 +1,8 @@
-FROM ordinaryexperts/aws-marketplace-patterns-devenv:2.2.0
+FROM ordinaryexperts/aws-marketplace-patterns-devenv:2.3.2
 # FROM devenv:latest
 
 # install dependencies
-RUN mkdir -p /tmp/code/cdk/pixelfed
+RUN mkdir -p /tmp/code/cdk/peertube
 COPY ./cdk/requirements.txt /tmp/code/cdk/
 RUN touch /tmp/code/cdk/README.md
 WORKDIR /tmp/code/cdk
