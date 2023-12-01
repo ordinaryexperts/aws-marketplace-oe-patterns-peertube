@@ -134,7 +134,7 @@ cat <<EOF > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
 EOF
 
 # https://github.com/Chocobozzz/PeerTube/releases
-VERSION=v5.2.0
+VERSION=v5.2.1
 
 apt-get update
 apt-get -y install curl sudo unzip vim
@@ -148,8 +148,8 @@ mkdir /root/ffmpeg
 cd /root/ffmpeg
 wget https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-arm64-static.tar.xz
 tar -xvf ffmpeg-release-arm64-static.tar.xz
-cp /root/ffmpeg/ffmpeg-6.0-arm64-static/ffmpeg /usr/bin/ffmpeg
-cp /root/ffmpeg/ffmpeg-6.0-arm64-static/ffprobe /usr/bin/ffprobe
+cp /root/ffmpeg/ffmpeg-6.*-arm64-static/ffmpeg /usr/bin/ffmpeg
+cp /root/ffmpeg/ffmpeg-6.*-arm64-static/ffprobe /usr/bin/ffprobe
 
 # install yarn
 npm install --global yarn
