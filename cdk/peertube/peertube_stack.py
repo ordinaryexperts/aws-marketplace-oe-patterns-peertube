@@ -31,10 +31,10 @@ else:
     except:
         template_version = "CICD"
 
-AMI_ID="ami-05328238b5089e712"
-AMI_NAME="ordinary-experts-patterns-peertube-1.0.0-3-g3e065ab-20231130-0626"
+AMI_ID="ami-0264b7625c682a7b0"
+AMI_NAME="ordinary-experts-patterns-peertube-1.0.0-4-g9db3a21-20240516-0321"
 generated_ami_ids = {
-    "us-east-1": "ami-05328238b5089e712"
+    "us-east-1": "ami-0264b7625c682a7b0"
 }
 # End generated code block.
 
