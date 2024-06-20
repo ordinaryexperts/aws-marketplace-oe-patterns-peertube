@@ -1,12 +1,12 @@
 
-SCRIPT_VERSION=1.2.5
-SCRIPT_PREINSTALL=ubuntu_2204_graviton_preinstall.sh
-SCRIPT_POSTINSTALL=ubuntu_2204_postinstall.sh
+SCRIPT_VERSION=1.4.0
+SCRIPT_PREINSTALL=ubuntu_2004_2204_preinstall.sh
+SCRIPT_POSTINSTALL=ubuntu_2004_2204_postinstall.sh
 
 # preinstall steps
 curl -O "https://raw.githubusercontent.com/ordinaryexperts/aws-marketplace-utilities/$SCRIPT_VERSION/packer_provisioning_scripts/$SCRIPT_PREINSTALL"
 chmod +x "$SCRIPT_PREINSTALL"
-./"$SCRIPT_PREINSTALL"
+./"$SCRIPT_PREINSTALL" --use-graviton
 rm $SCRIPT_PREINSTALL
 
 #

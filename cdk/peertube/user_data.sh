@@ -84,27 +84,27 @@ sed -i "/^object_storage:/{N;N;N;N;N;s/endpoint: ''/endpoint: 's3.${AWS::Region}
 sed -i "/^object_storage:/{N;N;N;N;N;N;N;s/region: 'us-east-1'/region: '${AWS::Region}'/}" config/production.yaml
 sed -i "s/access_key_id: ''/access_key_id: '$ACCESS_KEY_ID'/" config/production.yaml
 sed -i "s|secret_access_key: ''|secret_access_key: '$SECRET_ACCESS_KEY'|" config/production.yaml
-sed -i "s/bucket_name: 'streaming-playlists'/bucket_name: '${AssetsBucketName}'/" config/production.yaml
-sed -i "/Allows setting all buckets/{N;s|prefix: ''|prefix: 'streaming-playlists/'|}" config/production.yaml
-sed -i "/Useful when you want to use a CDN/{N;s|base_url: ''|base_url: 'https://${CloudFrontDistribution.DomainName}'|}" config/production.yaml
-# web_videos: bucket_name
-sed -i "/store_live_streams:/{N;N;N;s|bucket_name: 'web-videos'|bucket_name: '${AssetsBucketName}'|}" config/production.yaml
-# web_videos: prefix
-sed -i "/store_live_streams:/{N;N;N;N;s|prefix: ''|prefix: 'web-videos'|}" config/production.yaml
-# web_videos: base_url
-sed -i "/store_live_streams:/{N;N;N;N;N;s|base_url: ''|base_url: 'https://${CloudFrontDistribution.DomainName}'|}" config/production.yaml
-# user_exports: bucket_name
-sed -i "/store_live_streams:/{N;N;N;N;N;N;N;N;s|bucket_name: 'user-exports'|bucket_name: '${AssetsBucketName}'|}" config/production.yaml
-# user_exports: prefix
-sed -i "/store_live_streams:/{N;N;N;N;N;N;N;N;N;s|prefix: ''|prefix: 'user-exports'|}" config/production.yaml
-# user_exports: base_url
-sed -i "/store_live_streams:/{N;N;N;N;N;N;N;N;N;N;s|base_url: ''|base_url: 'https://${CloudFrontDistribution.DomainName}'|}" config/production.yaml
-# original_video_files: bucket_name
-sed -i "/store_live_streams:/{N;N;N;N;N;N;N;N;N;N;N;N;N;N;s|bucket_name: 'original-video-files'|bucket_name: '${AssetsBucketName}'|}" config/production.yaml
-# original_video_files: prefix
-sed -i "/store_live_streams:/{N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;s|prefix: ''|prefix: 'original-video-files'|}" config/production.yaml
-# original_video_files: base_url
-sed -i "/store_live_streams:/{N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;s|base_url: ''|base_url: 'https://${CloudFrontDistribution.DomainName}'|}" config/production.yaml
+
+# streaming_playlists
+sed -i "215s/bucket_name: .*/bucket_name: '${AssetsBucketName}'/" config/production.yaml
+sed -i "218s|prefix: .*|prefix: 'streaming-playlists/'|" config/production.yaml
+sed -i "222s|base_url: .*|base_url: 'https://${CloudFrontDistribution.DomainName}'|" config/production.yaml
+
+# web_videos
+sed -i "231s/bucket_name: .*/bucket_name: '${AssetsBucketName}'/" config/production.yaml
+sed -i "232s|prefix: .*|prefix: 'web-videos/'|" config/production.yaml
+sed -i "233s|base_url: .*|base_url: 'https://${CloudFrontDistribution.DomainName}'|" config/production.yaml
+
+# user_exports
+sed -i "236s/bucket_name: .*/bucket_name: '${AssetsBucketName}'/" config/production.yaml
+sed -i "237s|prefix: .*|prefix: 'user-exports/'|" config/production.yaml
+sed -i "238s|base_url: .*|base_url: 'https://${CloudFrontDistribution.DomainName}'|" config/production.yaml
+
+# original_video_files
+sed -i "242s/bucket_name: .*/bucket_name: '${AssetsBucketName}'/" config/production.yaml
+sed -i "243s|prefix: .*|prefix: 'original-video-files/'|" config/production.yaml
+sed -i "244s|base_url: .*|base_url: 'https://${CloudFrontDistribution.DomainName}'|" config/production.yaml
+
 if [ -n "${AdminEmail}" ]; then
     sed -i "/^admin:/{N;N;N;s/email: 'admin@${Hostname}'/email: '${AdminEmail}'/}" config/production.yaml
 fi
