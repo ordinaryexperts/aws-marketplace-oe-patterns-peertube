@@ -1,12 +1,12 @@
 
-SCRIPT_VERSION=1.2.5
-SCRIPT_PREINSTALL=ubuntu_2204_graviton_preinstall.sh
-SCRIPT_POSTINSTALL=ubuntu_2204_postinstall.sh
+SCRIPT_VERSION=1.4.0
+SCRIPT_PREINSTALL=ubuntu_2004_2204_preinstall.sh
+SCRIPT_POSTINSTALL=ubuntu_2004_2204_postinstall.sh
 
 # preinstall steps
 curl -O "https://raw.githubusercontent.com/ordinaryexperts/aws-marketplace-utilities/$SCRIPT_VERSION/packer_provisioning_scripts/$SCRIPT_PREINSTALL"
 chmod +x "$SCRIPT_PREINSTALL"
-./"$SCRIPT_PREINSTALL"
+./"$SCRIPT_PREINSTALL" --use-graviton
 rm $SCRIPT_PREINSTALL
 
 #
@@ -134,22 +134,22 @@ cat <<EOF > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
 EOF
 
 # https://github.com/Chocobozzz/PeerTube/releases
-VERSION=v5.2.0
+VERSION=v6.1.0
 
 apt-get update
 apt-get -y install curl sudo unzip vim
 
-# install node 16.x
-curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash - && \
+# install node 18.x
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - && \
 apt-get install -y nodejs
 
 # install ffmpeg 6
 mkdir /root/ffmpeg
 cd /root/ffmpeg
-wget https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-arm64-static.tar.xz
-tar -xvf ffmpeg-release-arm64-static.tar.xz
-cp /root/ffmpeg/ffmpeg-6.0-arm64-static/ffmpeg /usr/bin/ffmpeg
-cp /root/ffmpeg/ffmpeg-6.0-arm64-static/ffprobe /usr/bin/ffprobe
+wget https://www.johnvansickle.com/ffmpeg/old-releases/ffmpeg-6.0.1-arm64-static.tar.xz
+tar -xvf ffmpeg-6.0.1-arm64-static.tar.xz
+cp /root/ffmpeg/ffmpeg-6.*-arm64-static/ffmpeg /usr/bin/ffmpeg
+cp /root/ffmpeg/ffmpeg-6.*-arm64-static/ffprobe /usr/bin/ffprobe
 
 # install yarn
 npm install --global yarn
