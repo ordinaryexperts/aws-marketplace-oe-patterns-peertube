@@ -77,7 +77,7 @@ sed -i "/^smtp:/{N;N;N;N;N;N;N;s/username: null/username: '$ACCESS_KEY_ID'/}" co
 sed -i "/^smtp:/{N;N;N;N;N;N;N;N;s|password: null|password: '$SMTP_PASSWORD'|}" config/production.yaml
 sed -i "/^smtp:/{N;N;N;N;N;N;N;N;N;s/tls: true/tls: false/}" config/production.yaml
 sed -i "/^signup:/{N;s/enabled: false/enabled: true/}" config/production.yaml
-sed -i "/^signup:/{N;N;N;s/limit: 10/limit: -1/}" config/production.yaml
+sed -i "/^signup:/{N;N;N;N;N;s/limit: 10/limit: -1/}" config/production.yaml
 sed -i "s/requires_email_verification: false/requires_email_verification: true/" config/production.yaml
 sed -i "/^object_storage:/{N;s/enabled: false/enabled: true/}" config/production.yaml
 sed -i "/^object_storage:/{N;N;N;N;N;s/endpoint: ''/endpoint: 's3.${AWS::Region}.amazonaws.com'/}" config/production.yaml
@@ -86,24 +86,24 @@ sed -i "s/access_key_id: ''/access_key_id: '$ACCESS_KEY_ID'/" config/production.
 sed -i "s|secret_access_key: ''|secret_access_key: '$SECRET_ACCESS_KEY'|" config/production.yaml
 
 # streaming_playlists
-sed -i "215s/bucket_name: .*/bucket_name: '${AssetsBucketName}'/" config/production.yaml
-sed -i "218s|prefix: .*|prefix: 'streaming-playlists/'|" config/production.yaml
-sed -i "222s|base_url: .*|base_url: 'https://${CloudFrontDistribution.DomainName}'|" config/production.yaml
-
-# web_videos
-sed -i "231s/bucket_name: .*/bucket_name: '${AssetsBucketName}'/" config/production.yaml
-sed -i "232s|prefix: .*|prefix: 'web-videos/'|" config/production.yaml
+sed -i "226s/bucket_name: .*/bucket_name: '${AssetsBucketName}'/" config/production.yaml
+sed -i "229s|prefix: .*|prefix: 'streaming-playlists/'|" config/production.yaml
 sed -i "233s|base_url: .*|base_url: 'https://${CloudFrontDistribution.DomainName}'|" config/production.yaml
 
+# web_videos
+sed -i "242s/bucket_name: .*/bucket_name: '${AssetsBucketName}'/" config/production.yaml
+sed -i "243s|prefix: .*|prefix: 'web-videos/'|" config/production.yaml
+sed -i "244s|base_url: .*|base_url: 'https://${CloudFrontDistribution.DomainName}'|" config/production.yaml
+
 # user_exports
-sed -i "236s/bucket_name: .*/bucket_name: '${AssetsBucketName}'/" config/production.yaml
-sed -i "237s|prefix: .*|prefix: 'user-exports/'|" config/production.yaml
-sed -i "238s|base_url: .*|base_url: 'https://${CloudFrontDistribution.DomainName}'|" config/production.yaml
+sed -i "247s/bucket_name: .*/bucket_name: '${AssetsBucketName}'/" config/production.yaml
+sed -i "248s|prefix: .*|prefix: 'user-exports/'|" config/production.yaml
+sed -i "249s|base_url: .*|base_url: 'https://${CloudFrontDistribution.DomainName}'|" config/production.yaml
 
 # original_video_files
-sed -i "242s/bucket_name: .*/bucket_name: '${AssetsBucketName}'/" config/production.yaml
-sed -i "243s|prefix: .*|prefix: 'original-video-files/'|" config/production.yaml
-sed -i "244s|base_url: .*|base_url: 'https://${CloudFrontDistribution.DomainName}'|" config/production.yaml
+sed -i "253s/bucket_name: .*/bucket_name: '${AssetsBucketName}'/" config/production.yaml
+sed -i "254s|prefix: .*|prefix: 'original-video-files/'|" config/production.yaml
+sed -i "255s|base_url: .*|base_url: 'https://${CloudFrontDistribution.DomainName}'|" config/production.yaml
 
 if [ -n "${AdminEmail}" ]; then
     sed -i "/^admin:/{N;N;N;s/email: 'admin@${Hostname}'/email: '${AdminEmail}'/}" config/production.yaml
