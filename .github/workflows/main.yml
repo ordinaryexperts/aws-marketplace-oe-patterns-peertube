@@ -1,0 +1,32 @@
+# Main Test
+name: Main Test
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+  schedule:
+    - cron: '3 17 * * 1' # run Mondays at 9:03am pacific during Standard Time, 10:03am during Daylight Saving Time
+
+jobs:
+  taskcat:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: install
+        run: make update-common
+      - name: build
+        run: make build
+      - name: test
+        run: make test-main
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.OE_PATTERNS_TASKCAT_DEV_GITHUB_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.OE_PATTERNS_TASKCAT_DEV_GITHUB_AWS_SECRET_ACCESS_KEY }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: taskcat_outputs
+          path: test/main-test/taskcat_outputs/
