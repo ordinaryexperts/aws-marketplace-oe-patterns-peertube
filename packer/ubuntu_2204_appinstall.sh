@@ -134,22 +134,17 @@ cat <<EOF > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
 EOF
 
 # https://github.com/Chocobozzz/PeerTube/releases
-VERSION=v6.1.0
+VERSION=v7.0.1
 
 apt-get update
 apt-get -y install curl sudo unzip vim
 
-# install node 18.x
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - && \
+# install node 22.x
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash - && \
 apt-get install -y nodejs
 
-# install ffmpeg 6
-mkdir /root/ffmpeg
-cd /root/ffmpeg
-wget https://www.johnvansickle.com/ffmpeg/old-releases/ffmpeg-6.0.1-arm64-static.tar.xz
-tar -xvf ffmpeg-6.0.1-arm64-static.tar.xz
-cp /root/ffmpeg/ffmpeg-6.*-arm64-static/ffmpeg /usr/bin/ffmpeg
-cp /root/ffmpeg/ffmpeg-6.*-arm64-static/ffprobe /usr/bin/ffprobe
+# install ffmpeg
+apt-get install -y ffmpeg
 
 # install yarn
 npm install --global yarn
