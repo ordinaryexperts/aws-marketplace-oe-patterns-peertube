@@ -1,5 +1,7 @@
 # Unreleased
 
+# 2.1.0
+
 * Upgrade to PeerTube v7.0.1
 * Upgrade to Node.js v22.x
 * Upgrade to OE Common Constructs version 4.1.9
