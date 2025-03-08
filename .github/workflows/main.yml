@@ -7,7 +7,7 @@ on:
   pull_request:
     branches: [ develop ]
   schedule:
-    - cron: '3 17 * * 1' # run Mondays at 9:03am pacific during Standard Time, 10:03am during Daylight Saving Time
+    - cron: '0 20 * * 1' # run Mondays at 1pm pacific
 
 jobs:
   taskcat:
@@ -30,3 +30,15 @@ jobs:
         with:
           name: taskcat_outputs
           path: test/main-test/taskcat_outputs/
+      - name: clean snapshots
+        if: always()
+        run: make clean-snapshots-tcat
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.OE_PATTERNS_TASKCAT_DEV_GITHUB_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.OE_PATTERNS_TASKCAT_DEV_GITHUB_AWS_SECRET_ACCESS_KEY }}
+      - name: clean logs
+        if: always()
+        run: make clean-logs-tcat
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.OE_PATTERNS_TASKCAT_DEV_GITHUB_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.OE_PATTERNS_TASKCAT_DEV_GITHUB_AWS_SECRET_ACCESS_KEY }}

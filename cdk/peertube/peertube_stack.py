@@ -31,7 +31,7 @@ else:
     except:
         template_version = "CICD"
 
-AMI_ID="ami-077ee9738a03a8019" # ordinary-experts-patterns-peertube-2.1.0-20250302-0533
+AMI_ID="ami-0fb6c6f280aca48dc" # ordinary-experts-patterns-peertube-2.1.0-1-g17c38cd-20250307-0915
 
 class PeertubeStack(Stack):
 
