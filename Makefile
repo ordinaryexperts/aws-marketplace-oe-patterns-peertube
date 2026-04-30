@@ -12,5 +12,5 @@ deploy: build
 	--parameters AsgInstanceType=c7g.medium \
 	--parameters AsgReprovisionString=20230517.6 \
 	--parameters DnsHostname=peertube-${USER}.dev.patterns.ordinaryexperts.com \
-	--parameters AsgAmiIdv300=ami-08710a83734693ee3 \
+	--parameters AsgAmiIdv300=ami-01957f524d64ff844 \
 	--parameters DnsRoute53HostedZoneName=dev.patterns.ordinaryexperts.com

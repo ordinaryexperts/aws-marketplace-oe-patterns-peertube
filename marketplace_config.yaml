@@ -1,0 +1,67 @@
+# AWS Marketplace submission configuration
+# Used by `make marketplace-validate` / `make marketplace-submit` / `make marketplace-status`
+# (via scripts/marketplace.py in the devenv image).
+
+product_id: "4b0e2889-01ca-46e9-9f02-54b48010ddc4"
+
+# IAM role that allows AWS Marketplace to read the AMI
+ami_access_role_arn: "arn:aws:iam::879777583535:role/AWSMarketplaceAMIScanning"
+
+# Pattern for the CloudFormation parameter that receives the AMI ID.
+# {version} is the pattern version with dots stripped (e.g. "3.0.0" -> "300").
+ami_parameter_pattern: "AsgAmiIdv{version}"
+
+# S3 bucket and path prefix where CloudFormation templates are published
+template_bucket: "ordinary-experts-aws-marketplace-pattern-artifacts"
+template_pattern: "peertube"
+
+# Whether to include a standalone AMI delivery option in addition to the
+# CloudFormation delivery option. This product ships as a CloudFormation
+# template only.
+include_standalone_ami: false
+
+# AMI / OS metadata
+operating_system: "UBUNTU"
+operating_system_version: "24.04"
+username: "ubuntu"
+recommended_instance_type: "c7g.medium"
+
+usage_instructions: >-
+  Run the stack, providing valid parameters. When the stack creation completes,
+  go to the outputs of the stack and open the URL in your browser. To access
+  the application server, find the EC2 instance in the AWS console and Connect
+  using the Session Manager option. The initial admin email is set via the
+  AdminEmail parameter; the initial admin password is generated on first boot
+  and stored in AWS Secrets Manager. For more detailed instructions, see the
+  GitHub project.
+
+# CloudFormation delivery option details
+delivery_option:
+  short_description: |
+    Deploy a production-ready PeerTube federated video platform on AWS with this CloudFormation template and custom AMI. Provisions VPC, Auto Scaling Group, Aurora PostgreSQL, ElastiCache Redis, S3, CloudFront, SES, and Route53.
+  long_description: |
+    PeerTube on AWS by FOSSonCloud deploys a production-ready PeerTube instance using AWS best practices.
+
+    PeerTube is a free, open-source, federated video platform that enables creators to host their own video site while participating in the wider Fediverse via ActivityPub.
+
+    WHAT'S DEPLOYED
+
+    - VPC with public and private subnets (or use your existing VPC)
+    - Application Load Balancer with ACM certificate for HTTPS
+    - Auto Scaling Group with a single Graviton (arm64) EC2 instance running PeerTube
+    - Persistent EBS data volume attached to the active instance
+    - Aurora PostgreSQL cluster (multi-AZ)
+    - ElastiCache Redis cluster for caching and job queues
+    - S3 bucket for user-uploaded videos, captions, and exports
+    - CloudFront distribution fronting S3 for global video delivery
+    - SES domain identity with Easy DKIM for email delivery
+    - Route53 DNS records
+    - CloudWatch Logs integration
+    - AWS Secrets Manager for credential storage
+    - IAM roles with least-privilege permissions
+
+    REQUIREMENTS
+
+    - Route 53 hosted zone for DNS
+    - ACM certificate for HTTPS
+  architecture_diagram_url: "https://ordinary-experts-aws-marketplace-pattern-artifacts.s3.amazonaws.com/peertube/3.0.0/diagram.png"
