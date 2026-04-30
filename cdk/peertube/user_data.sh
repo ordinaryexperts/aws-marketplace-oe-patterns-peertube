@@ -66,49 +66,73 @@ sudo -u peertube cp peertube-latest/config/default.yaml config/default.yaml
 sudo -u peertube cp peertube-latest/config/production.yaml.example config/production.yaml
 sed -i 's/example.com/${Hostname}/g' config/production.yaml
 sed -i "/^secrets:/{N;N;s/peertube: ''/peertube: '$APP_KEY'/}" config/production.yaml
+
+# database (v8 adds ssl_settings sub-block; match suffix/password by unique literal)
 sed -i "/^database:/{N;s/hostname: '127.0.0.1'/hostname: '${DbCluster.Endpoint.Address}'/}" config/production.yaml
-sed -i "/^database:/{N;N;N;N;s/suffix: '_prod'/name: 'peertube'/}" config/production.yaml
-sed -i "/^database:/{N;N;N;N;N;N;s|password: 'peertube'|password: '$DB_PASSWORD'|}" config/production.yaml
+sed -i "s/suffix: '_prod'/name: 'peertube'/" config/production.yaml
+sed -i "s|password: 'peertube'|password: '$DB_PASSWORD'|" config/production.yaml
+
+# redis
 sed -i "/^redis:/{N;s/hostname: '127.0.0.1'/hostname: '${RedisCluster.RedisEndpoint.Address}'/}" config/production.yaml
 sed -i "/^redis:/{N;N;s/port: 6379/port: ${RedisCluster.RedisEndpoint.Port}/}" config/production.yaml
+
+# smtp (SES)
 sed -i "/^smtp:/{N;N;N;N;N;s/hostname: null/hostname: 'email-smtp.${AWS::Region}.amazonaws.com'/}" config/production.yaml
 sed -i "/^smtp:/{N;N;N;N;N;N;s/port: 465/port: 587/}" config/production.yaml
 sed -i "/^smtp:/{N;N;N;N;N;N;N;s/username: null/username: '$ACCESS_KEY_ID'/}" config/production.yaml
 sed -i "/^smtp:/{N;N;N;N;N;N;N;N;s|password: null|password: '$SMTP_PASSWORD'|}" config/production.yaml
 sed -i "/^smtp:/{N;N;N;N;N;N;N;N;N;s/tls: true/tls: false/}" config/production.yaml
+
+# signup
 sed -i "/^signup:/{N;s/enabled: false/enabled: true/}" config/production.yaml
 sed -i "/^signup:/{N;N;N;N;N;s/limit: 10/limit: -1/}" config/production.yaml
 sed -i "s/requires_email_verification: false/requires_email_verification: true/" config/production.yaml
+
+# object_storage (top-level keys)
 sed -i "/^object_storage:/{N;s/enabled: false/enabled: true/}" config/production.yaml
 sed -i "/^object_storage:/{N;N;N;N;N;s/endpoint: ''/endpoint: 's3.${AWS::Region}.amazonaws.com'/}" config/production.yaml
 sed -i "/^object_storage:/{N;N;N;N;N;N;N;s/region: 'us-east-1'/region: '${AWS::Region}'/}" config/production.yaml
 sed -i "s/access_key_id: ''/access_key_id: '$ACCESS_KEY_ID'/" config/production.yaml
 sed -i "s|secret_access_key: ''|secret_access_key: '$SECRET_ACCESS_KEY'|" config/production.yaml
 
-# streaming_playlists
-sed -i "226s/bucket_name: .*/bucket_name: '${AssetsBucketName}'/" config/production.yaml
-sed -i "229s|prefix: .*|prefix: 'streaming-playlists/'|" config/production.yaml
-sed -i "233s|base_url: .*|base_url: 'https://${CloudFrontDistribution.DomainName}'|" config/production.yaml
-
-# web_videos
-sed -i "242s/bucket_name: .*/bucket_name: '${AssetsBucketName}'/" config/production.yaml
-sed -i "243s|prefix: .*|prefix: 'web-videos/'|" config/production.yaml
-sed -i "244s|base_url: .*|base_url: 'https://${CloudFrontDistribution.DomainName}'|" config/production.yaml
-
-# user_exports
-sed -i "247s/bucket_name: .*/bucket_name: '${AssetsBucketName}'/" config/production.yaml
-sed -i "248s|prefix: .*|prefix: 'user-exports/'|" config/production.yaml
-sed -i "249s|base_url: .*|base_url: 'https://${CloudFrontDistribution.DomainName}'|" config/production.yaml
-
-# original_video_files
-sed -i "253s/bucket_name: .*/bucket_name: '${AssetsBucketName}'/" config/production.yaml
-sed -i "254s|prefix: .*|prefix: 'original-video-files/'|" config/production.yaml
-sed -i "255s|base_url: .*|base_url: 'https://${CloudFrontDistribution.DomainName}'|" config/production.yaml
+# object_storage sub-sections — nested address ranges scoped to the
+# object_storage: block so sub-section names that appear elsewhere in the
+# config (storage.streaming_playlists, transcoding.web_videos, email.subject.prefix, etc.)
+# are not touched.
+sed -i "/^object_storage:/,/^log:/ {
+  /^  streaming_playlists:/,/^  web_videos:/ {
+    s/bucket_name: .*/bucket_name: '${AssetsBucketName}'/
+    s|prefix: .*|prefix: 'streaming-playlists/'|
+    s|base_url: .*|base_url: 'https://${CloudFrontDistribution.DomainName}'|
+  }
+  /^  web_videos:/,/^  user_exports:/ {
+    s/bucket_name: .*/bucket_name: '${AssetsBucketName}'/
+    s|prefix: .*|prefix: 'web-videos/'|
+    s|base_url: .*|base_url: 'https://${CloudFrontDistribution.DomainName}'|
+  }
+  /^  user_exports:/,/^  original_video_files:/ {
+    s/bucket_name: .*/bucket_name: '${AssetsBucketName}'/
+    s|prefix: .*|prefix: 'user-exports/'|
+    s|base_url: .*|base_url: 'https://${CloudFrontDistribution.DomainName}'|
+  }
+  /^  original_video_files:/,/^  captions:/ {
+    s/bucket_name: .*/bucket_name: '${AssetsBucketName}'/
+    s|prefix: .*|prefix: 'original-video-files/'|
+    s|base_url: .*|base_url: 'https://${CloudFrontDistribution.DomainName}'|
+  }
+  /^  captions:/,/^log:/ {
+    s/bucket_name: .*/bucket_name: '${AssetsBucketName}'/
+    s|prefix: .*|prefix: 'captions/'|
+    s|base_url: .*|base_url: 'https://${CloudFrontDistribution.DomainName}'|
+  }
+}" config/production.yaml
 
 if [ -n "${AdminEmail}" ]; then
     sed -i "/^admin:/{N;N;N;s/email: 'admin@${Hostname}'/email: '${AdminEmail}'/}" config/production.yaml
 fi
 sed -i "s/from_address: 'admin@${Hostname}'/from_address: 'no-reply@${Hostname}'/" config/production.yaml
+
+# transcoding: enable 480p
 sed -i "/audio-only/{N;N;N;N;s/480p: false/480p: true/}" config/production.yaml
 
 

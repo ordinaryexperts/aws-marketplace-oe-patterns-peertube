@@ -25,3 +25,7 @@ manifest.json
 # shared Makefiles/scripts
 common.mk
 scripts/common/*
+
+# upgrade-workflow runtime artifacts
+logs/
+.marketplace_changeset
