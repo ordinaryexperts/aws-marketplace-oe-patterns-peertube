@@ -1,7 +1,7 @@
 
-SCRIPT_VERSION=1.4.0
-SCRIPT_PREINSTALL=ubuntu_2004_2204_preinstall.sh
-SCRIPT_POSTINSTALL=ubuntu_2004_2204_postinstall.sh
+SCRIPT_VERSION=1.9.2
+SCRIPT_PREINSTALL=ubuntu_2204_2404_preinstall.sh
+SCRIPT_POSTINSTALL=ubuntu_2204_2404_postinstall.sh
 
 # preinstall steps
 curl -O "https://raw.githubusercontent.com/ordinaryexperts/aws-marketplace-utilities/$SCRIPT_VERSION/packer_provisioning_scripts/$SCRIPT_PREINSTALL"
@@ -134,7 +134,7 @@ cat <<EOF > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
 EOF
 
 # https://github.com/Chocobozzz/PeerTube/releases
-VERSION=v7.0.1
+VERSION=v8.1.5
 
 apt-get update
 apt-get -y install curl sudo unzip vim
@@ -146,13 +146,14 @@ apt-get install -y nodejs
 # install ffmpeg
 apt-get install -y ffmpeg
 
-# install yarn
-npm install --global yarn
+# install pnpm (PeerTube >= 8.0 replaced yarn with pnpm)
+npm install --global pnpm
 
 apt-get -y install        \
         nginx             \
         postgresql-client \
         python3-dev       \
+        python3-pip       \
         python-is-python3 \
         openssl           \
         g++               \
@@ -170,9 +171,9 @@ sudo -u peertube wget -q "https://github.com/Chocobozzz/PeerTube/releases/downlo
 sudo -u peertube unzip -q peertube-${VERSION}.zip && sudo -u peertube rm peertube-${VERSION}.zip
 cd /var/www/peertube
 sudo -u peertube ln -s versions/peertube-${VERSION} ./peertube-latest
-cd ./peertube-latest && sudo -H -u peertube yarn install --production --pure-lockfile
+cd ./peertube-latest && sudo -H -u peertube npm run install-node-dependencies -- --production
 
-pip install boto3
+pip install boto3 --break-system-packages
 cat <<EOF > /root/check-secrets.py
 #!/usr/bin/env python3
 

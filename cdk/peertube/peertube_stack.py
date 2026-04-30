@@ -31,7 +31,8 @@ else:
     except:
         template_version = "CICD"
 
-AMI_ID="ami-0fb6c6f280aca48dc" # ordinary-experts-patterns-peertube-2.1.0-1-g17c38cd-20250307-0915
+AMI_ID="ami-08710a83734693ee3" # ordinary-experts-patterns-peertube-3.0.0-20260420-1108
+NEXT_RELEASE_PREFIX = "v300"
 
 class PeertubeStack(Stack):
 
@@ -108,6 +109,7 @@ class PeertubeStack(Stack):
             "Asg",
             additional_iam_role_policies=[asg_update_secret_policy],
             ami_id=AMI_ID,
+            ami_id_param_name_suffix=NEXT_RELEASE_PREFIX,
             default_instance_type="c7g.medium",
             root_volume_size=100,
             secret_arns=[db_secret.secret_arn(), ses.secret_arn()],
