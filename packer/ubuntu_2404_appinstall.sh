@@ -134,7 +134,7 @@ cat <<EOF > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
 EOF
 
 # https://github.com/Chocobozzz/PeerTube/releases
-VERSION=v8.1.5
+VERSION=v8.2.3
 
 apt-get update
 apt-get -y install curl sudo unzip vim

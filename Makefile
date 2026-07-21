@@ -10,7 +10,7 @@ deploy: build
 	--parameters AlbIngressCidr=0.0.0.0/0 \
 	--parameters AdminEmail=dylan@ordinaryexperts.com \
 	--parameters AsgInstanceType=c7g.medium \
-	--parameters AsgReprovisionString=20230517.6 \
+	--parameters AsgReprovisionString=20260720.1 \
 	--parameters DnsHostname=peertube-${USER}.dev.patterns.ordinaryexperts.com \
-	--parameters AsgAmiIdv300=ami-01957f524d64ff844 \
+	--parameters AsgAmiIdv310=ami-0ab94862975018080 \
 	--parameters DnsRoute53HostedZoneName=dev.patterns.ordinaryexperts.com
