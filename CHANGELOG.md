@@ -1,5 +1,13 @@
 # Unreleased
 
+# 3.1.0
+
+* Upgrade to PeerTube v8.2.3 (from v8.1.5)
+  * Security: v8.1.6 fixed a SQL injection vulnerability that was actively exploited in the wild since 2026-05-18 (attackers used it to mint root tokens and install a malicious plugin). Deployments on v8.1.5 or earlier should upgrade promptly.
+  * v8.2.2/v8.2.3 include further security fixes: ActivityPub actor/host validation on `Update` activities, HLS object-storage path validation, P2P segment validator hardening, OAuth token redaction in debug logs
+  * No `config/production.yaml` schema changes in the sections this pattern patches (object_storage, database, redis, smtp, signup, admin, transcoding); no manual migration steps required
+* Bump AMI parameter to `AsgAmiIdv310`
+
 # 3.0.0
 
 * Upgrade to PeerTube v8.1.5

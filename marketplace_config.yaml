@@ -64,4 +64,4 @@ delivery_option:
 
     - Route 53 hosted zone for DNS
     - ACM certificate for HTTPS
-  architecture_diagram_url: "https://ordinary-experts-aws-marketplace-pattern-artifacts.s3.amazonaws.com/peertube/3.0.0/diagram.png"
+  architecture_diagram_url: "https://ordinary-experts-aws-marketplace-pattern-artifacts.s3.amazonaws.com/peertube/3.1.0/diagram.png"
