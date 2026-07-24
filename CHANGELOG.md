@@ -1,5 +1,10 @@
 # Unreleased
 
+# 3.1.1
+
+* Fix a CloudFormation dependency-ordering bug where the ASG could launch before the ElastiCache Redis cluster's endpoint attributes (`RedisEndpoint.Address`/`.Port`) were resolved, leaving newly-launched instances with an empty `redis:` section in `config/production.yaml`. PeerTube would then crash-loop on startup (ioredis `ERR_MISSING_ARGS`), which surfaced as a 502 Bad Gateway from the ALB since nginx's `/elb-check` health check doesn't depend on the PeerTube app being up. The ASG now has an explicit CDK dependency on the Redis cluster, mirroring the existing dependency on the database.
+* No install-script changes in this release; AMI rebuilt from the same PeerTube v8.2.3 install script as 3.1.0 (AWS Marketplace requires a distinct AMI ID per submitted version).
+
 # 3.1.0
 
 * Upgrade to PeerTube v8.2.3 (from v8.1.5)

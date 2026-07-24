@@ -31,8 +31,8 @@ else:
     except:
         template_version = "CICD"
 
-AMI_ID="ami-0e87b43ed95ea3d30" # ordinary-experts-patterns-peertube-3.1.0-20260721-0241
-NEXT_RELEASE_PREFIX = "v310"
+AMI_ID="ami-010b76de4f4c3a79d" # ordinary-experts-patterns-peertube-3.1.1-20260724-0728 (rebuilt from identical install script; AWS Marketplace requires a distinct AMI ID per submitted version)
+NEXT_RELEASE_PREFIX = "v311"
 
 class PeertubeStack(Stack):
 
@@ -194,6 +194,7 @@ class PeertubeStack(Stack):
             vpc=vpc
         )
         asg.asg.node.add_dependency(db.db_primary_instance)
+        asg.asg.node.add_dependency(redis)
         asg.asg.node.add_dependency(ses.generate_smtp_password_custom_resource)
 
         redis_ingress = Util.add_sg_ingress(redis, asg.sg)
