@@ -31,7 +31,7 @@ else:
     except:
         template_version = "CICD"
 
-AMI_ID="ami-010b76de4f4c3a79d" # ordinary-experts-patterns-peertube-3.1.1-20260724-0728 (rebuilt from identical install script; AWS Marketplace requires a distinct AMI ID per submitted version)
+AMI_ID="ami-0ab94862975018080" # ordinary-experts-patterns-peertube-3.1.0-20260720-0946
 NEXT_RELEASE_PREFIX = "v311"
 
 class PeertubeStack(Stack):
