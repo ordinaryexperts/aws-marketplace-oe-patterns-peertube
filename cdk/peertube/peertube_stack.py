@@ -194,6 +194,7 @@ class PeertubeStack(Stack):
             vpc=vpc
         )
         asg.asg.node.add_dependency(db.db_primary_instance)
+        asg.asg.node.add_dependency(redis)
         asg.asg.node.add_dependency(ses.generate_smtp_password_custom_resource)
 
         redis_ingress = Util.add_sg_ingress(redis, asg.sg)
