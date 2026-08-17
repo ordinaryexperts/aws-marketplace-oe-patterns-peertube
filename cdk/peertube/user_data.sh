@@ -73,8 +73,13 @@ sed -i "s/suffix: '_prod'/name: 'peertube'/" config/production.yaml
 sed -i "s|password: 'peertube'|password: '$DB_PASSWORD'|" config/production.yaml
 
 # redis
-sed -i "/^redis:/{N;s/hostname: '127.0.0.1'/hostname: '${RedisCluster.RedisEndpoint.Address}'/}" config/production.yaml
-sed -i "/^redis:/{N;N;s/port: 6379/port: ${RedisCluster.RedisEndpoint.Port}/}" config/production.yaml
+# Fn::GetAtt RedisCluster.RedisEndpoint.{Address,Port} resolves to an empty
+# string here because NumCacheNodes is a parameter Ref rather than a literal
+# 1, so look the endpoint up at boot via the API instead.
+REDIS_ENDPOINT_ADDRESS=$(aws elasticache describe-cache-clusters --cache-cluster-id ${RedisCluster} --show-cache-node-info --query "CacheClusters[0].CacheNodes[0].Endpoint.Address" --output text)
+REDIS_ENDPOINT_PORT=$(aws elasticache describe-cache-clusters --cache-cluster-id ${RedisCluster} --show-cache-node-info --query "CacheClusters[0].CacheNodes[0].Endpoint.Port" --output text)
+sed -i "/^redis:/{N;s/hostname: '127.0.0.1'/hostname: '$REDIS_ENDPOINT_ADDRESS'/}" config/production.yaml
+sed -i "/^redis:/{N;N;s/port: 6379/port: $REDIS_ENDPOINT_PORT/}" config/production.yaml
 
 # smtp (SES)
 sed -i "/^smtp:/{N;N;N;N;N;s/hostname: null/hostname: 'email-smtp.${AWS::Region}.amazonaws.com'/}" config/production.yaml

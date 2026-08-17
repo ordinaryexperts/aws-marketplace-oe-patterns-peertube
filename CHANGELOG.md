@@ -1,5 +1,10 @@
 # Unreleased
 
+# 3.1.2
+
+* Fix the underlying cause of the 502-on-launch bug that 3.1.1 attempted (and failed) to fix. The redis `hostname`/`port` were still resolving empty because `Fn::GetAtt RedisCluster.RedisEndpoint.{Address,Port}` returns an empty string whenever `NumCacheNodes` is a CloudFormation parameter `Ref` rather than a literal `1` (a CloudFormation limitation, not a dependency-ordering race, so 3.1.1's explicit ASG-on-Redis dependency did not help). `user_data.sh` now looks up the Redis endpoint at boot via `aws elasticache describe-cache-clusters` (same pattern already used for the DB secret) instead of relying on that attribute.
+* No install-script changes in this release; AMI rebuilt from the same PeerTube v8.2.3 install script as 3.1.1 (AWS Marketplace requires a distinct AMI ID per submitted version).
+
 # 3.1.1
 
 * Fix a CloudFormation dependency-ordering bug where the ASG could launch before the ElastiCache Redis cluster's endpoint attributes (`RedisEndpoint.Address`/`.Port`) were resolved, leaving newly-launched instances with an empty `redis:` section in `config/production.yaml`. PeerTube would then crash-loop on startup (ioredis `ERR_MISSING_ARGS`), which surfaced as a 502 Bad Gateway from the ALB since nginx's `/elb-check` health check doesn't depend on the PeerTube app being up. The ASG now has an explicit CDK dependency on the Redis cluster, mirroring the existing dependency on the database.
