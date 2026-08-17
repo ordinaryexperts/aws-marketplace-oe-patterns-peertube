@@ -8,6 +8,7 @@ from aws_cdk import (
     CfnMapping,
     CfnOutput,
     CfnParameter,
+    Fn,
     Stack
 )
 from constructs import Construct
@@ -101,13 +102,35 @@ class PeertubeStack(Stack):
             policy_name="AllowUpdateInstanceSecret"
         )
 
+        # CfnGetAtt RedisCluster.RedisEndpoint.{Address,Port} resolves to an empty
+        # string when NumCacheNodes is a parameter Ref rather than a literal 1, so
+        # user_data.sh looks the endpoint up at boot via the API instead.
+        asg_read_redis_policy = aws_iam.CfnRole.PolicyProperty(
+            policy_document=aws_iam.PolicyDocument(
+                statements=[
+                    aws_iam.PolicyStatement(
+                        effect=aws_iam.Effect.ALLOW,
+                        actions=[
+                            "elasticache:DescribeCacheClusters"
+                        ],
+                        resources=[
+                            Fn.sub(
+                                "arn:${AWS::Partition}:elasticache:${AWS::Region}:${AWS::AccountId}:cluster:${RedisCluster}"
+                            )
+                        ]
+                    )
+                ]
+            ),
+            policy_name="AllowDescribeRedisCluster"
+        )
+
         # asg
         with open("peertube/user_data.sh") as f:
             user_data_contents = f.read()
         asg = Asg(
             self,
             "Asg",
-            additional_iam_role_policies=[asg_update_secret_policy],
+            additional_iam_role_policies=[asg_update_secret_policy, asg_read_redis_policy],
             ami_id=AMI_ID,
             ami_id_param_name_suffix=NEXT_RELEASE_PREFIX,
             default_instance_type="c7g.medium",
